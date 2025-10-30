@@ -1,6 +1,6 @@
 # AK Medlánky – Klubová soutěž (React)
 
-Jednoduchá React aplikace, která načte `pilots_info.json` ze své `PUBLIC_URL` a vykreslí tabulku.
+Jednoduchá React aplikace, která načte `soutez_vysledky.json` ze své `PUBLIC_URL` a vykreslí tabulku.
 Používá Create React App (react-scripts).
 
 ## Použití
@@ -10,12 +10,12 @@ Používá Create React App (react-scripts).
    npm install
    npm start
    ```
-3. Nahraď `public/pilots_info.json` svým skutečným souborem (nebo jej tam zkopíruj build skriptem z Pythonu).
+3. Nahraď `public/soutez_vysledky.json` svým skutečným souborem (nebo jej tam zkopíruj build skriptem z Pythonu).
 4. Pro produkční build:
    ```bash
    npm run build
    ```
 
-Aplikace načítá data z `${process.env.PUBLIC_URL}/pilots_info.json`.
+Aplikace načítá data z `${process.env.PUBLIC_URL}/soutez_vysledky.json`.
 Při nasazení pod podcestou (např. GitHub Pages) nastav `homepage` v `package.json`
 nebo proměnnou prostředí `PUBLIC_URL` během buildu.
