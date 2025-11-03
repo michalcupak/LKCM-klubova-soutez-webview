@@ -1,7 +1,7 @@
 {
   "name": "ak-medlanky-klubova-soutez",
   "version": "0.1.1",
-  "homepage": "https://lkcm.jelito.eu/soutez_v2/",
+  "homepage": "https://lkcm.jelito.eu/soutez/",
   "private": true,
   "dependencies": {
     "react": "^18.3.1",

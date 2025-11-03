@@ -4,9 +4,9 @@ import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 're
  * App loads soutez_vysledky.json from its PUBLIC_URL and renders the table.
  * Extras:
  * - URL params:
- *   - scale / zoom: font scaling (default 1.0). e.g. ?scale=1.25 or ?zoom=120
- *   - monitor: 1/true/yes/on to enable "monitor mode" (no scroll, columns)
- *   - cols: optional 1..3 manual column count override for monitor mode
+ *   - scale / zoom: font scaling (default 1.0). e.g. ?scale=1.25 or ?zoom=1.5
+ *   - tv: 1/true/yes/on to enable "TV mode" (no scroll, columns)
+ *   - cols: optional 1..3 manual column count override for TV mode
  */
 export default function App() {
     // -------- URL PARAMS ----------
@@ -14,13 +14,13 @@ export default function App() {
     const parseBool = (v) => ['1', 'true', 'yes', 'on'].includes(String(v || '').toLowerCase());
     const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
 
-    const scaleParam = params.get('scale') ?? (params.get('zoom') ? Number(params.get('zoom')) / 100 : null);
+    const scaleParam = params.get('scale') ?? params.get('zoom');
     const scale = useMemo(() => {
         const s = Number(scaleParam);
         return clamp(Number.isFinite(s) && s > 0 ? s : 1, 0.5, 3);
     }, [scaleParam]);
 
-    const monitorMode = useMemo(() => parseBool(params.get('monitor')), [params]);
+    const tvMode = useMemo(() => parseBool(params.get('tv')), [params]);
     const colsOverrideRaw = useMemo(() => {
         const c = parseInt(params.get('cols') || params.get('columns') || '', 10);
         return Number.isFinite(c) ? clamp(c, 1, 3) : null;
@@ -68,19 +68,19 @@ export default function App() {
     const rowMeasureRef = useRef(null);
     const rulesMeasureRef = useRef(null);
 
-    // add/remove no-scroll on body in monitor mode
+    // add/remove no-scroll on body in TV mode
     useEffect(() => {
-        if (monitorMode) {
+        if (tvMode) {
             document.body.classList.add('no-scroll');
         } else {
             document.body.classList.remove('no-scroll');
         }
         return () => document.body.classList.remove('no-scroll');
-    }, [monitorMode]);
+    }, [tvMode]);
 
-    // recompute layout on resize / data / scale / monitorMode
+    // recompute layout on resize / data / scale / tvMode
     useLayoutEffect(() => {
-        if (!monitorMode) return;
+        if (!tvMode) return;
 
         const compute = () => {
             const cont = containerRef.current;
@@ -129,7 +129,7 @@ export default function App() {
             ro.disconnect();
             window.removeEventListener('resize', compute);
         };
-    }, [monitorMode, pilots.length, scale, colsOverrideRaw]);
+    }, [tvMode, pilots.length, scale, colsOverrideRaw]);
 
     // -------- RENDER HELPERS ----------
     const TitleBlock = () => (
@@ -245,7 +245,7 @@ export default function App() {
     }
 
     // -------- NORMAL MODE (scrollable, původní tabulka) ----------
-    if (!monitorMode) {
+    if (!tvMode) {
         return (
             <div
                 ref={containerRef}
