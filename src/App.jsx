@@ -1,4 +1,5 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import CompetitionsTables from "./typova_soutez";
 
 /**
  * App loads soutez_vysledky.json from its PUBLIC_URL and renders the table.
@@ -206,7 +207,8 @@ export default function App() {
                     započítává pouze lety, které mají startovní pásku maximálně ve vzdálenosti
                     20&nbsp;km od vztažného bodu LKCM
                 </li>
-                <li>každému pilotovi se započítávají 4 nejlepší lety v daném roce</li>
+                <li>v celkové soutěži se každému pilotovi započítávají 4 nejlepší lety v daném roce</li>
+                <li>v typové a věkové soutěži se každému pilotovi započítává 1 nejlepší let v každé kategorii v daném roce</li>
             </ul>
         </>
     ));
@@ -276,6 +278,10 @@ export default function App() {
                         </table>
                     </div>
                 </div>
+
+                <hr />
+
+                <CompetitionsTables data={data["typova_soutez_vysledky"]} types_per_category={data["types_per_category"]} />
 
                 <hr />
                 <RulesBlock />
