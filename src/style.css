@@ -1,0 +1,28 @@
+.nav-tabs .nav-link {
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.nav-tabs .nav-link.active {
+    font-weight: 900;
+}
+
+/* pro no-scroll režim */
+body.no-scroll { overflow: hidden; }
+@media (max-width: 768px) {
+    /* v malých šířkách raději jen 1 sloupec (řeší autoCols výpočet) */
+}
+
+.table-fixed { table-layout: fixed; width: 100%; }
+.td-ellipsis {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.cell-block {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}

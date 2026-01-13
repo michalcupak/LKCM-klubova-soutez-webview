@@ -1,13 +1,5 @@
 import React from "react";
 
-const COMPETITION_LABELS = {
-    open: "Open",
-    club: "Club",
-    zakladni: "Základní",
-    classic: "Classic",
-    // sem případně další: standard: "Standard", 15m: "15m", ...
-};
-
 const TableHead = React.memo(() => (
     <thead>
     <tr>
@@ -87,7 +79,7 @@ const FlightRow = ({ flight, idx }) => {
     );
 };
 
-const CompetitionTable = ({ categoryKey, glider_types, flights }) => {
+const CompetitionTable = ({ categoryKey, categoryDesc, flights }) => {
     const all = Array.isArray(flights) ? flights : [];
     const [showAll, setShowAll] = React.useState(false);
 
@@ -95,13 +87,11 @@ const CompetitionTable = ({ categoryKey, glider_types, flights }) => {
     const visible = showAll ? all : all.slice(0, limit);
     const hasMore = all.length > limit;
 
-    const title = COMPETITION_LABELS[categoryKey] ?? categoryKey;
-
     return (
         <>
-            <h4 className="mb-3">{title}</h4>
+            <h4 className="mb-1">{categoryKey}</h4>
 
-            <p><small>{glider_types.sort().join(", ")}</small></p>
+            <p><small>{categoryDesc}</small></p>
 
             <div className="row">
                 <div className="col-xl-8 col-lg-10 col-md-12">
@@ -143,15 +133,13 @@ const CompetitionTable = ({ categoryKey, glider_types, flights }) => {
                     )}
 
                     {hasMore && showAll && (
-                        <div className="mt-2">
-                            <button
-                                type="button"
-                                className="btn btn-link _btn-outline-secondary btn-sm"
-                                onClick={() => setShowAll(false)}
-                            >
-                                Skrýt
-                            </button>
-                        </div>
+                        <button
+                            type="button"
+                            className="btn btn-link _btn-outline-secondary btn-sm"
+                            onClick={() => setShowAll(false)}
+                        >
+                            Skrýt
+                        </button>
                     )}
                 </div>
             </div>
@@ -164,16 +152,13 @@ const CompetitionTable = ({ categoryKey, glider_types, flights }) => {
  *  - očekává tvar { open: [...], club: [...], ... }
  *  - každá kategorie použije CompetitionTable
  */
-const CompetitionsTables = ({ data, types_per_category, order }) => {
+const CompetitionsTables = ({ data, descriptions, order }) => {
     const obj = data && typeof data === "object" && !Array.isArray(data) ? data : {};
 
-    // pořadí: buď uživatel zadá (order), nebo vezmeme nejdřív ty známé z mapování a pak zbytek
+    // pořadí: buď uživatel zadá (order), nebo vezmeme jak jsou serazene v objektu
     const keys = Array.isArray(order)
         ? order.filter((k) => k in obj)
-        : [
-            ...Object.keys(COMPETITION_LABELS).filter((k) => k in obj),
-            ...Object.keys(obj).filter((k) => !(k in COMPETITION_LABELS)),
-        ];
+        : Object.keys(obj);
 
     // vyfiltruj prázdné / neplatné položky (volitelné)
     const categories = keys
@@ -185,8 +170,8 @@ const CompetitionsTables = ({ data, types_per_category, order }) => {
     return (
         <>
             {categories.map(({ key, flights }) => (
-                <div key={key} className="mb-4">
-                    <CompetitionTable categoryKey={key} flights={flights} glider_types={types_per_category[key] ?? []} />
+                <div key={key} className="mb-5">
+                    <CompetitionTable categoryKey={key} flights={flights} categoryDesc={descriptions ? descriptions[key] : []} />
                 </div>
             ))}
         </>
@@ -196,4 +181,4 @@ const CompetitionsTables = ({ data, types_per_category, order }) => {
 export default CompetitionsTables;
 
 // Exporty navíc, kdybys chtěl používat samostatně:
-export { CompetitionTable, COMPETITION_LABELS };
+export { CompetitionTable };

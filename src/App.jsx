@@ -1,5 +1,8 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import CompetitionsTables from "./typova_soutez";
+import Tab from 'react-bootstrap/Tab';
+import Tabs from 'react-bootstrap/Tabs';
+import "./style.css";
 
 /**
  * App loads soutez_vysledky.json from its PUBLIC_URL and renders the table.
@@ -26,6 +29,8 @@ export default function App() {
         const c = parseInt(params.get('cols') || params.get('columns') || '', 10);
         return Number.isFinite(c) ? clamp(c, 1, 3) : null;
     }, [params]);
+
+    const soutezType = params.get('soutez') ?? 'klubova';
 
     // -------- DATA LOADING ----------
     const [data, setData] = useState({}); // expects { cps_year, updated_at, pilots_info: [...] }
@@ -256,40 +261,63 @@ export default function App() {
             >
                 <TitleBlock />
 
-                <div className="row">
-                    <div className="col-xl-6 col-lg-8 col-md-10">
-                        <table className="table table-striped table-fixed">
-                            <colgroup>
-                                <col style={{ width: '6%' }} />{/* # */}
-                                <col />{/* Jméno (flex) */}
-                                <col style={{ width: '9%' }} />{/* Rok */}
-                                <col style={{ width: '11%' }} />{/* Let 1 */}
-                                <col style={{ width: '11%' }} />{/* Let 2 */}
-                                <col style={{ width: '11%' }} />{/* Let 3 */}
-                                <col style={{ width: '11%' }} />{/* Let 4 */}
-                                <col style={{ width: '13%' }} />{/* Celkem */}
-                            </colgroup>
-                            <TableHead />
-                            <tbody>
-                            {pilots.map((pilot, idx) => (
-                                <PilotRow key={pilot?.url ?? pilot?.name ?? idx} pilot={pilot} idx={idx} />
-                            ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                <Tabs
+                    defaultActiveKey={soutezType}
+                    id="uncontrolled-tab-example"
+                    className="mb-4 strong"
+                >
+                    <Tab eventKey="klubova" title="Klubová soutěž">
+                        <div className="row">
+                            <div className="col-xl-6 col-lg-8 col-md-10">
+                                <table className="table table-striped table-fixed">
+                                    <colgroup>
+                                        <col style={{ width: '6%' }} />{/* # */}
+                                        <col />{/* Jméno (flex) */}
+                                        <col style={{ width: '9%' }} />{/* Rok */}
+                                        <col style={{ width: '11%' }} />{/* Let 1 */}
+                                        <col style={{ width: '11%' }} />{/* Let 2 */}
+                                        <col style={{ width: '11%' }} />{/* Let 3 */}
+                                        <col style={{ width: '11%' }} />{/* Let 4 */}
+                                        <col style={{ width: '13%' }} />{/* Celkem */}
+                                    </colgroup>
+                                    <TableHead />
+                                    <tbody>
+                                    {pilots.map((pilot, idx) => (
+                                        <PilotRow key={pilot?.url ?? pilot?.name ?? idx} pilot={pilot} idx={idx} />
+                                    ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </Tab>
+                    <Tab eventKey="typova" title="Typová soutěž">
+                        <CompetitionsTables data={data["typova_soutez_vysledky"]}
+                                            descriptions={data["types_per_category"]}
+                        />
+                    </Tab>
+                    <Tab eventKey="vekova" title="Věková soutěž">
+                        <CompetitionsTables data={data["vekova_soutez_vysledky"]}
+                                            descriptions={{
+                                                "Mladší junior": ["do 25 let"],
+                                                "Starší junior": ["26 - 40 let"],
+                                                "Mladší senior": ["41 - 55 let"],
+                                                "Starší senior": ["56 - 70 let"],
+                                                "Super senior": ["70 a více let"]
+                                            }}
+                                            order={["Mladší junior", "Starší junior", "Mladší senior", "Starší senior", "Super senior"]}
+                        />
+                    </Tab>
+                </Tabs>
 
-                <hr />
 
-                <CompetitionsTables data={data["typova_soutez_vysledky"]} types_per_category={data["types_per_category"]} />
-
-                <hr />
-                <RulesBlock />
+                <hr/>
+                <RulesBlock/>
+                <br/>
             </div>
         );
     }
 
-    // -------- MONITOR MODE (no scroll, 1-3 columns, oříznutí zbytku) ----------
+    // -------- TV MODE (no scroll, 1-3 columns, oříznutí zbytku) ----------
     // připravit řezy do sloupců
     const { columns, rowsPerCol, showRulesInMonitor } = layout;
     const maxRows = rowsPerCol * columns;
@@ -440,28 +468,6 @@ export default function App() {
                 </div>
             </div>
 
-            {/* Globální style */}
-            <style>{`
-                /* pro no-scroll režim */
-                body.no-scroll { overflow: hidden; }
-                @media (max-width: 768px) {
-                  /* v malých šířkách raději jen 1 sloupec (řeší autoCols výpočet) */
-                }
-      
-              .table-fixed { table-layout: fixed; width: 100%; }
-              .td-ellipsis {
-                overflow: hidden;
-                white-space: nowrap;
-                text-overflow: ellipsis;
-              }
-              .cell-block {
-                display: block;
-                width: 100%;
-                overflow: hidden;
-                white-space: nowrap;
-                text-overflow: ellipsis;
-              }
-            `}</style>
         </div>
     );
 }
