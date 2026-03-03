@@ -415,7 +415,9 @@ export default function App() {
                     </Tab>
                     <Tab eventKey="typova" title="Typová soutěž">
                         <CompetitionsTables data={data["typova_soutez_vysledky"]}
-                                            descriptions={data["types_per_category"]}
+                                            descriptions={data["types_per_category_filter"]}
+                                            descriptions_more={data["types_per_category"]}
+                                            descriptions_more_label="zobrazit všechny typy"
                         />
                     </Tab>
                     <Tab eventKey="vekova" title="Věková soutěž">

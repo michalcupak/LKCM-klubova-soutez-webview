@@ -1,4 +1,5 @@
 import React from "react";
+import {Modal} from "react-bootstrap";
 
 const TableHead = React.memo(() => (
     <thead>
@@ -79,9 +80,10 @@ const FlightRow = ({ flight, idx }) => {
     );
 };
 
-const CompetitionTable = ({ categoryKey, categoryDesc, flights }) => {
+const CompetitionTable = ({ categoryKey, categoryDesc, flights, categoryDescMore, categoryDescMoreLabel="zobrazit vše" }) => {
     const all = Array.isArray(flights) ? flights : [];
     const [showAll, setShowAll] = React.useState(false);
+    const [showDescMore, setShowDescMore] = React.useState(false);
 
     const limit = 5;
     const visible = showAll ? all : all.slice(0, limit);
@@ -89,9 +91,37 @@ const CompetitionTable = ({ categoryKey, categoryDesc, flights }) => {
 
     return (
         <>
-            <h4 className="mb-1">{categoryKey}</h4>
+            <h4 className="mb-1 ">{categoryKey}</h4>
 
-            <p><small>{categoryDesc}</small></p>
+            <div className="col-xl-8 col-lg-10 col-md-12 mb-2 d-flex align-items-baseline">
+                <small className="me-2">{categoryDesc}</small>
+                {categoryDescMore && (
+                    <button
+                        type="button"
+                        className="btn btn-link btn-sm p-0 ml-auto text-nowrap"
+                        onClick={() => setShowDescMore(true)}
+                    >
+                        <small>{categoryDescMoreLabel}</small>
+                    </button>
+                )}
+            </div>
+
+            {showDescMore && (
+                <Modal show={showDescMore} onHide={() => setShowDescMore(false)} centered animation={false}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>{categoryKey} - zúčastněné typy</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        {Array.isArray(categoryDescMore) ?
+                            <ul>
+                                {categoryDescMore.map((item, i) => <li key={i}>{item}</li>)}
+                            </ul>
+                            :
+                            categoryDescMore
+                        }
+                    </Modal.Body>
+                </Modal>
+            )}
 
             <div className="row">
                 <div className="col-xl-8 col-lg-10 col-md-12">
@@ -152,7 +182,7 @@ const CompetitionTable = ({ categoryKey, categoryDesc, flights }) => {
  *  - očekává tvar { open: [...], club: [...], ... }
  *  - každá kategorie použije CompetitionTable
  */
-const CompetitionsTables = ({ data, descriptions, order }) => {
+const CompetitionsTables = ({ data, descriptions, descriptions_more, descriptions_more_label, order }) => {
     const obj = data && typeof data === "object" && !Array.isArray(data) ? data : {};
 
     // pořadí: buď uživatel zadá (order), nebo vezmeme jak jsou serazene v objektu
@@ -171,7 +201,13 @@ const CompetitionsTables = ({ data, descriptions, order }) => {
         <>
             {categories.map(({ key, flights }) => (
                 <div key={key} className="mb-5">
-                    <CompetitionTable categoryKey={key} flights={flights} categoryDesc={descriptions ? descriptions[key] : []} />
+                    <CompetitionTable
+                        categoryKey={key}
+                        flights={flights}
+                        categoryDesc={descriptions ? descriptions[key] : ""}
+                        categoryDescMore={descriptions_more ? descriptions_more[key] : null}
+                        categoryDescMoreLabel={descriptions_more_label}
+                    />
                 </div>
             ))}
         </>
