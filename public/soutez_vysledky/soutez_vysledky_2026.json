@@ -1,0 +1,15 @@
+{
+  "cps_year": "2026",
+  "updated_at": "03. 03. 2026 09:59:07",
+  "pilots_info": [],
+  "typova_soutez_vysledky": {},
+  "types_per_category": {},
+  "vekova_soutez_vysledky": {},
+  "vekove_kategorie": {
+    "Mladší junior": "do 25 let",
+    "Starší junior": "26 - 40 let",
+    "Mladší senior": "41 - 55 let",
+    "Starší senior": "56 - 70 let",
+    "Super senior": "70 a více let"
+  }
+}

@@ -5,12 +5,14 @@ import Tabs from 'react-bootstrap/Tabs';
 import "./style.css";
 
 /**
- * App loads soutez_vysledky.json from its PUBLIC_URL and renders the table.
+ * App loads year_map.json and per-year results from PUBLIC_URL and renders the table.
  * Extras:
  * - URL params:
  *   - scale / zoom: font scaling (default 1.0). e.g. ?scale=1.25 or ?zoom=1.5
  *   - tv: 1/true/yes/on to enable "TV mode" (no scroll, columns)
  *   - cols: optional 1..3 manual column count override for TV mode
+ *   - rok: optional year override
+ *   - soutez: optional klubova/typova/vekova
  */
 export default function App() {
     // -------- URL PARAMS ----------
@@ -33,14 +35,62 @@ export default function App() {
     const soutezType = params.get('soutez') ?? 'klubova';
 
     // -------- DATA LOADING ----------
+    const [yearMap, setYearMap] = useState(null); // { "2025": "soutez_vysledky_2025.json", ... }
+    const [yearMapLoading, setYearMapLoading] = useState(true);
+    const [yearMapError, setYearMapError] = useState(null);
+    const [selectedYear, setSelectedYear] = useState(null);
+
     const [data, setData] = useState({}); // expects { cps_year, updated_at, pilots_info: [...] }
-    const [loading, setLoading] = useState(true);
+    const [dataLoading, setDataLoading] = useState(false);
     const [error, setError] = useState(null);
 
     const publicUrl = process.env?.PUBLIC_URL || '';
+    const publicBase = publicUrl.replace(/\/$/, '');
+
+    const defaultYear = useMemo(() => {
+        const now = new Date();
+        const month = now.getMonth() + 1; // 1-12
+        return month <= 3 ? now.getFullYear() - 1 : now.getFullYear();
+    }, []);
+
+    const availableYears = useMemo(() => {
+        if (!yearMap) return [];
+        return Object.keys(yearMap).sort((a, b) => Number(b) - Number(a));
+    }, [yearMap]);
 
     useEffect(() => {
-        const url = `${publicUrl.replace(/\/$/, '')}/soutez_vysledky.json`;
+        const url = `${publicBase}/year_map.json`;
+        fetch(url, { cache: 'no-store' })
+            .then((res) => {
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                return res.json();
+            })
+            .then((json) => setYearMap(json))
+            .catch((e) => setYearMapError(e.message || String(e)))
+            .finally(() => setYearMapLoading(false));
+    }, [publicBase]);
+
+    useEffect(() => {
+        if (!yearMap || selectedYear || availableYears.length === 0) return;
+
+        const rokParam = params.get('rok');
+        const defaultYearStr = String(defaultYear);
+        const initialYear =
+            (rokParam && yearMap[rokParam] ? rokParam : null) ||
+            (yearMap[defaultYearStr] ? defaultYearStr : null) ||
+            availableYears[0];
+
+        if (initialYear) setSelectedYear(initialYear);
+    }, [yearMap, selectedYear, availableYears, params, defaultYear]);
+
+    useEffect(() => {
+        if (!yearMap || !selectedYear || !yearMap[selectedYear]) return;
+
+        const filename = yearMap[selectedYear];
+        const url = `${publicBase}/soutez_vysledky/${filename}`;
+        setDataLoading(true);
+        setError(null);
+
         fetch(url, { cache: 'no-store' })
             .then((res) => {
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -48,8 +98,8 @@ export default function App() {
             })
             .then((json) => setData(json))
             .catch((e) => setError(e.message || String(e)))
-            .finally(() => setLoading(false));
-    }, [publicUrl]);
+            .finally(() => setDataLoading(false));
+    }, [publicBase, selectedYear, yearMap]);
 
     const pilots = useMemo(() => {
         const pilots_info = Array.isArray(data?.pilots_info) ? data.pilots_info : [];
@@ -64,7 +114,7 @@ export default function App() {
         showRulesInMonitor: false,
     });
 
-    const year = data?.cps_year || new Date().getFullYear();
+    const year = data?.cps_year || selectedYear || new Date().getFullYear();
     const updatedAt = data?.updated_at || '';
 
     // -------- MONITOR MODE LAYOUT (no scroll, columns) ----------
@@ -138,9 +188,42 @@ export default function App() {
     }, [tvMode, pilots.length, scale, colsOverrideRaw]);
 
     // -------- RENDER HELPERS ----------
-    const TitleBlock = () => (
+    const handleYearChange = (e) => {
+        const nextYear = e.target.value;
+        if (!nextYear) return;
+        setSelectedYear(nextYear);
+
+        const nextParams = new URLSearchParams(window.location.search);
+        nextParams.set('rok', nextYear);
+        const nextQuery = nextParams.toString();
+        const nextUrl = `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ''}${window.location.hash || ''}`;
+        window.history.replaceState(null, '', nextUrl);
+    };
+
+    const YearSwitcher = () => {
+        if (!availableYears.length) return null;
+        return (
+            <div className="d-flex align-items-center" style={{ gap: '0.5rem', flexWrap: 'wrap' }}>
+                <label htmlFor="year-select" className="mb-0">Rok:</label>
+                <select
+                    id="year-select"
+                    className="form-control"
+                    style={{ width: 'auto', minWidth: 120 }}
+                    value={selectedYear || ''}
+                    onChange={handleYearChange}
+                >
+                    {availableYears.map((y) => (
+                        <option key={y} value={y}>{y}</option>
+                    ))}
+                </select>
+            </div>
+        );
+    };
+
+    const TitleBlock = (props) => (
         <>
             <h1 style={{ fontSize: `calc(${scale} * 2.5rem)` }}>AK Medlánky - Klubová soutěž {year}</h1>
+            {!props.tv ? <YearSwitcher /> : null}
             {updatedAt ? <p>Aktualizováno: {updatedAt}</p> : null}
         </>
     );
@@ -219,6 +302,12 @@ export default function App() {
     ));
 
     // -------- LOADING / ERROR ----------
+    const loading =
+        yearMapLoading ||
+        dataLoading ||
+        (!selectedYear && !yearMapError && availableYears.length > 0);
+    const activeFilename = selectedYear && yearMap ? yearMap[selectedYear] : null;
+
     if (loading) {
         return (
             <div
@@ -232,6 +321,40 @@ export default function App() {
         );
     }
 
+    if (yearMapError) {
+        return (
+            <div
+                ref={containerRef}
+                className="container-fluid ml-2 mr-2 mt-3"
+                style={{ fontSize: `${16 * scale}px` }}
+            >
+                <TitleBlock />
+                <div className="alert alert-danger" role="alert">
+                    Nepodařilo se načíst <code>year_map.json</code> ({yearMapError}).
+                </div>
+                <p>
+                    Ujisti se, že je soubor dostupný na adrese:{' '}
+                    <code>{publicBase}/year_map.json</code> a že server vrací platný JSON.
+                </p>
+            </div>
+        );
+    }
+
+    if (!availableYears.length) {
+        return (
+            <div
+                ref={containerRef}
+                className="container-fluid ml-2 mr-2 mt-3"
+                style={{ fontSize: `${16 * scale}px` }}
+            >
+                <TitleBlock />
+                <div className="alert alert-warning" role="alert">
+                    V mapě ročníků nejsou žádná data.
+                </div>
+            </div>
+        );
+    }
+
     if (error) {
         return (
             <div
@@ -241,11 +364,11 @@ export default function App() {
             >
                 <TitleBlock />
                 <div className="alert alert-danger" role="alert">
-                    Nepodařilo se načíst <code>soutez_vysledky.json</code> ({error}).
+                    Nepodařilo se načíst <code>{activeFilename || 'soutez_vysledky.json'}</code> ({error}).
                 </div>
                 <p>
                     Ujisti se, že je soubor dostupný na adrese:{' '}
-                    <code>{publicUrl}/soutez_vysledky.json</code> a že server vrací platný JSON.
+                    <code>{publicBase}/soutez_vysledky/{activeFilename || 'soutez_vysledky.json'}</code> a že server vrací platný JSON.
                 </p>
             </div>
         );
@@ -341,7 +464,7 @@ export default function App() {
         >
             {/* header area (measured) */}
             <div ref={headerRef} style={{ flex: '0 0 auto' }}>
-                <TitleBlock />
+                <TitleBlock tv />
             </div>
 
             {/* columns area */}
