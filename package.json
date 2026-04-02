@@ -1,6 +1,6 @@
 {
   "name": "ak-medlanky-klubova-soutez",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "homepage": "https://lkcm.cz/soutez/",
   "private": true,
   "dependencies": {
