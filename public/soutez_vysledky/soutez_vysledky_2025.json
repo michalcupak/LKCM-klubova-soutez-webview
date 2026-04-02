@@ -1,6 +1,6 @@
 {
   "cps_year": "2025",
-  "updated_at": "13. 01. 2026 00:32:41",
+  "updated_at": "03. 03. 2026 15:19:46",
   "pilots_info": [
     {
       "name": "Michal Poslužný",
@@ -3814,10 +3814,45 @@
     ]
   },
   "types_per_category": {
-    "Club": "ASW-15, ASW-15B, ASW-24(A)+WL, DG-300 (450 kg), Discus CS, G-102 Astir cs, G-104 Speed Astir II, LS-1f, Pik-20B, Std. Cirrus, Std. Cirrus WL, TST-10 Atlas, TST-10M Atlas",
-    "Open": "ASG-32 /EL/Mi 800kg, ASW-20 (A)+F /15m +WL, ASW-20 B(L) /15m, ASW-20 C(L) /15m, Duo Discus X(T), Duo Discus XL(T), JS3 (RES/TJ) 18m, Janus c/cM/cT, LAK 12, LAK 17A(T) /18m, LS-8-18 18m, LS-8a /15m, Nimbus-2c, Ventus c /17,6m",
-    "Základní": "L-13 Blaník, LG-125 Šohaj 2",
-    "Classic": "Ka 6E, VT-116 Orlik II"
+    "Club": [
+      "ASW-15",
+      "ASW-15B",
+      "ASW-24(A)+WL",
+      "DG-300 (450 kg)",
+      "Discus CS",
+      "G-102 Astir cs",
+      "G-104 Speed Astir II",
+      "LS-1f",
+      "Pik-20B",
+      "Std. Cirrus",
+      "Std. Cirrus WL",
+      "TST-10 Atlas",
+      "TST-10M Atlas"
+    ],
+    "Open": [
+      "ASG-32 /EL/Mi 800kg",
+      "ASW-20 (A)+F /15m +WL",
+      "ASW-20 B(L) /15m",
+      "ASW-20 C(L) /15m",
+      "Duo Discus X(T)",
+      "Duo Discus XL(T)",
+      "JS3 (RES/TJ) 18m",
+      "Janus c/cM/cT",
+      "LAK 12",
+      "LAK 17A(T) /18m",
+      "LS-8-18 18m",
+      "LS-8a /15m",
+      "Nimbus-2c",
+      "Ventus c /17,6m"
+    ],
+    "Základní": [
+      "L-13 Blaník",
+      "LG-125 Šohaj 2"
+    ],
+    "Classic": [
+      "Ka 6E",
+      "VT-116 Orlik II"
+    ]
   },
   "vekova_soutez_vysledky": {
     "Starší senior": [
@@ -4551,5 +4586,11 @@
     "Mladší senior": "41 - 55 let",
     "Starší senior": "56 - 70 let",
     "Super senior": "70 a více let"
+  },
+  "types_per_category_filter": {
+    "Club": "Std. Cirrus, ASW-15, ASW-19, ASW-24, Atlas, LS-1, Astir, Cobra, Phoebus, Pik-20, DG-300, Discus cs",
+    "Open": "Duo Discus, Ventus, ASW-20, ASG-32, JS3, LAK 12, LAK 17, LS-8, Nimbus-2, Janus",
+    "Základní": "Blaník, Bergfalke, Šohaj, Luňák, Spatz",
+    "Classic": "Orlik, M-28, M-35, Foka, Ka 6"
   }
 }

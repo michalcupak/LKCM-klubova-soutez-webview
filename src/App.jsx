@@ -3,6 +3,8 @@ import CompetitionsTables from "./typova_soutez";
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import "./style.css";
+import { IdleCursorBoundary } from "@michal.cupak/react-idle-cursor-hide";
+import "@michal.cupak/react-idle-cursor-hide/styles.css";
 
 /**
  * App loads year_map.json and per-year results from PUBLIC_URL and renders the table.
@@ -453,146 +455,148 @@ export default function App() {
     );
 
     return (
-        <div
-            ref={containerRef}
-            className="container-fluid ml-2 mr-2 mt-3"
-            style={{
-                fontSize: `${16 * scale}px`,
-                height: '100vh',
-                overflow: 'hidden',
-                display: 'flex',
-                flexDirection: 'column',
-            }}
-        >
-            {/* header area (measured) */}
-            <div ref={headerRef} style={{ flex: '0 0 auto' }}>
-                <TitleBlock tv />
-            </div>
-
-            {/* columns area */}
+        <IdleCursorBoundary idleMs={1500} wrapperStyle={{ minHeight: "100vh" }}>
             <div
-                className="d-flex"
+                ref={containerRef}
+                className="container-fluid ml-2 mr-2 mt-3"
                 style={{
-                    flex: '1 1 auto',
-                    gap: '1rem',
+                    fontSize: `${16 * scale}px`,
+                    height: '100vh',
                     overflow: 'hidden',
+                    display: 'flex',
+                    flexDirection: 'column',
                 }}
             >
-                {columnSlices.map((slice, colIdx) => (
-                    <div
-                        key={`col-${colIdx}`}
-                        style={{
-                            flex: 1,
-                            minWidth: 0,
-                            overflow: 'hidden',
-                            display: 'flex',
-                            flexDirection: 'column',
-                        }}
-                    >
-                        <div style={{ overflow: 'hidden' }}>
-                            <table className="table table-striped mb-0 table-fixed">
-                                <colgroup>
-                                    <col style={{ width: '6%' }} />{/* # */}
-                                    <col />{/* Jméno (flex) */}
-                                    <col style={{ width: '9%' }} />{/* Rok */}
-                                    <col style={{ width: '11%' }} />{/* Let 1 */}
-                                    <col style={{ width: '11%' }} />{/* Let 2 */}
-                                    <col style={{ width: '11%' }} />{/* Let 3 */}
-                                    <col style={{ width: '11%' }} />{/* Let 4 */}
-                                    <col style={{ width: '13%' }} />{/* Celkem */}
-                                </colgroup>
-                                <TableHead />
-                                <tbody>
-                                {slice.map((pilot, idx) => (
-                                    <PilotRow
-                                        key={pilot?.url ?? pilot?.name ?? `${colIdx}-${idx}`}
-                                        pilot={pilot}
-                                        idx={colIdx * rowsPerCol + idx}
-                                    />
-                                ))}
-                                </tbody>
-                            </table>
-                        </div>
-
-                        {/* V posledním sloupci zobraz pravidla, pokud se vejdou */}
-                        {colIdx === columnSlices.length - 1 && showRulesInMonitor ? (
-                            <div className="mt-3">
-                                <hr className="my-2" />
-                                <RulesBlock />
-                            </div>
-                        ) : null}
-                    </div>
-                ))}
-            </div>
-
-            {/* Měřicí prvky (neviditelné, ale ve flow, aby se počítaly správné výšky se scale) */}
-            <div style={{ position: 'absolute', visibility: 'hidden', left: -9999, top: 0 }}>
-                <table className="table table-striped mb-0 table-fixed">
-                    <colgroup>
-                        <col style={{ width: '6%' }} />{/* # */}
-                        <col />{/* Jméno (flex) */}
-                        <col style={{ width: '9%' }} />{/* Rok */}
-                        <col style={{ width: '11%' }} />{/* Let 1 */}
-                        <col style={{ width: '11%' }} />{/* Let 2 */}
-                        <col style={{ width: '11%' }} />{/* Let 3 */}
-                        <col style={{ width: '11%' }} />{/* Let 4 */}
-                        <col style={{ width: '13%' }} />{/* Celkem */}
-                    </colgroup>
-                    <thead ref={theadMeasureRef}>
-                    <tr>
-                        <th>#</th>
-                        <th>Jméno</th>
-                        <th>Rok</th>
-                        <th colSpan="4">4 nejlepší lety</th>
-                        <th>Celkem</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr ref={rowMeasureRef}>
-                        <td>99</td>
-                        <td className="td-ellipsis">
-                            <a
-                                href="#x"
-                                target="_blank"
-                                rel="noreferrer"
-                                className="cell-block"
-                            >
-                                Měřicí Pilot S Extra Dlouhým Jménem Které Se Jinak Zalamuje
-                            </a>
-
-                        </td>
-                        <td>1999</td>
-                        <td>
-                            <a href="#x" title="2025-01-01">
-                                <b>999.9</b>
-                                <span style={{ fontSize: '0.6em' }}>&nbsp;b</span>
-                            </a>
-                        </td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td>
-                            <b>9999.9</b>
-                            <span style={{ fontSize: '0.6em' }}>&nbsp;b</span>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-
-                <div ref={rulesMeasureRef} style={{ width: 520 }}>
-                    {/* stejný markup jako RulesBlock */}
-                    <h3 style={{ fontSize: `calc(${scale} * 1.75rem)` }}>Pravidla</h3>
-                    <ul className="mb-0">
-                        <li>započítává lety z CPS – modré i šedé body</li>
-                        <li>
-                            započítává pouze lety, které mají startovní pásku maximálně ve vzdálenosti
-                            20&nbsp;km od vztažného bodu LKCM
-                        </li>
-                        <li>každému pilotovi se započítávají 4 nejlepší lety v daném roce</li>
-                    </ul>
+                {/* header area (measured) */}
+                <div ref={headerRef} style={{ flex: '0 0 auto' }}>
+                    <TitleBlock tv />
                 </div>
-            </div>
 
-        </div>
+                {/* columns area */}
+                <div
+                    className="d-flex"
+                    style={{
+                        flex: '1 1 auto',
+                        gap: '1rem',
+                        overflow: 'hidden',
+                    }}
+                >
+                    {columnSlices.map((slice, colIdx) => (
+                        <div
+                            key={`col-${colIdx}`}
+                            style={{
+                                flex: 1,
+                                minWidth: 0,
+                                overflow: 'hidden',
+                                display: 'flex',
+                                flexDirection: 'column',
+                            }}
+                        >
+                            <div style={{ overflow: 'hidden' }}>
+                                <table className="table table-striped mb-0 table-fixed">
+                                    <colgroup>
+                                        <col style={{ width: '6%' }} />{/* # */}
+                                        <col />{/* Jméno (flex) */}
+                                        <col style={{ width: '9%' }} />{/* Rok */}
+                                        <col style={{ width: '11%' }} />{/* Let 1 */}
+                                        <col style={{ width: '11%' }} />{/* Let 2 */}
+                                        <col style={{ width: '11%' }} />{/* Let 3 */}
+                                        <col style={{ width: '11%' }} />{/* Let 4 */}
+                                        <col style={{ width: '13%' }} />{/* Celkem */}
+                                    </colgroup>
+                                    <TableHead />
+                                    <tbody>
+                                    {slice.map((pilot, idx) => (
+                                        <PilotRow
+                                            key={pilot?.url ?? pilot?.name ?? `${colIdx}-${idx}`}
+                                            pilot={pilot}
+                                            idx={colIdx * rowsPerCol + idx}
+                                        />
+                                    ))}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            {/* V posledním sloupci zobraz pravidla, pokud se vejdou */}
+                            {colIdx === columnSlices.length - 1 && showRulesInMonitor ? (
+                                <div className="mt-3">
+                                    <hr className="my-2" />
+                                    <RulesBlock />
+                                </div>
+                            ) : null}
+                        </div>
+                    ))}
+                </div>
+
+                {/* Měřicí prvky (neviditelné, ale ve flow, aby se počítaly správné výšky se scale) */}
+                <div style={{ position: 'absolute', visibility: 'hidden', left: -9999, top: 0 }}>
+                    <table className="table table-striped mb-0 table-fixed">
+                        <colgroup>
+                            <col style={{ width: '6%' }} />{/* # */}
+                            <col />{/* Jméno (flex) */}
+                            <col style={{ width: '9%' }} />{/* Rok */}
+                            <col style={{ width: '11%' }} />{/* Let 1 */}
+                            <col style={{ width: '11%' }} />{/* Let 2 */}
+                            <col style={{ width: '11%' }} />{/* Let 3 */}
+                            <col style={{ width: '11%' }} />{/* Let 4 */}
+                            <col style={{ width: '13%' }} />{/* Celkem */}
+                        </colgroup>
+                        <thead ref={theadMeasureRef}>
+                        <tr>
+                            <th>#</th>
+                            <th>Jméno</th>
+                            <th>Rok</th>
+                            <th colSpan="4">4 nejlepší lety</th>
+                            <th>Celkem</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ref={rowMeasureRef}>
+                            <td>99</td>
+                            <td className="td-ellipsis">
+                                <a
+                                    href="#x"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="cell-block"
+                                >
+                                    Měřicí Pilot S Extra Dlouhým Jménem Které Se Jinak Zalamuje
+                                </a>
+
+                            </td>
+                            <td>1999</td>
+                            <td>
+                                <a href="#x" title="2025-01-01">
+                                    <b>999.9</b>
+                                    <span style={{ fontSize: '0.6em' }}>&nbsp;b</span>
+                                </a>
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <b>9999.9</b>
+                                <span style={{ fontSize: '0.6em' }}>&nbsp;b</span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <div ref={rulesMeasureRef} style={{ width: 520 }}>
+                        {/* stejný markup jako RulesBlock */}
+                        <h3 style={{ fontSize: `calc(${scale} * 1.75rem)` }}>Pravidla</h3>
+                        <ul className="mb-0">
+                            <li>započítává lety z CPS – modré i šedé body</li>
+                            <li>
+                                započítává pouze lety, které mají startovní pásku maximálně ve vzdálenosti
+                                20&nbsp;km od vztažného bodu LKCM
+                            </li>
+                            <li>každému pilotovi se započítávají 4 nejlepší lety v daném roce</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </IdleCursorBoundary>
     );
 }
