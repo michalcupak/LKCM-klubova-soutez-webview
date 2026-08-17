@@ -125,32 +125,39 @@ const CompetitionTable = ({ categoryKey, categoryDesc, flights, categoryDescMore
 
             <div className="row">
                 <div className="col-xl-8 col-lg-10 col-md-12">
-                    <table className="table table-striped table-fixed mb-0">
-                        <colgroup>
-                            <col style={{ width: "8%" }} />{/* # */}
-                            <col />{/* Jméno (flex) */}
-                            <col style={{ width: '9%' }} />{/* Rok */}
-                            <col style={{ width: "13%" }} />{/* Datum */}
-                            <col style={{ width: "18%" }} />{/* Kluzak */}
-                            <col style={{ width: "20%" }} />{/* Trat */}
-                            <col style={{ width: "11%" }} />{/* Body */}
-                        </colgroup>
+                    <div
+                        className="table-responsive competition-table-scroll mb-0"
+                        role="region"
+                        aria-label={`Výsledky kategorie ${categoryKey}`}
+                        tabIndex={0}
+                    >
+                        <table className="table table-striped table-fixed competition-table mb-0">
+                            <colgroup>
+                                <col style={{ width: "8%" }} />{/* # */}
+                                <col />{/* Jméno (flex) */}
+                                <col style={{ width: '9%' }} />{/* Rok */}
+                                <col style={{ width: "13%" }} />{/* Datum */}
+                                <col style={{ width: "18%" }} />{/* Kluzak */}
+                                <col style={{ width: "20%" }} />{/* Trat */}
+                                <col style={{ width: "11%" }} />{/* Body */}
+                            </colgroup>
 
-                        <TableHead />
+                            <TableHead />
 
-                        <tbody>
-                        {visible.map((flight, idx) => (
-                            <FlightRow
-                                key={
-                                    flight?.url ??
-                                    `${flight?.pilot ?? "pilot"}-${flight?.date ?? "date"}-${idx}`
-                                }
-                                flight={flight}
-                                idx={idx}
-                            />
-                        ))}
-                        </tbody>
-                    </table>
+                            <tbody>
+                            {visible.map((flight, idx) => (
+                                <FlightRow
+                                    key={
+                                        flight?.url ??
+                                        `${flight?.pilot ?? "pilot"}-${flight?.date ?? "date"}-${idx}`
+                                    }
+                                    flight={flight}
+                                    idx={idx}
+                                />
+                            ))}
+                            </tbody>
+                        </table>
+                    </div>
 
                     {hasMore && !showAll && (
                         <button

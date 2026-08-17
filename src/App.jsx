@@ -394,24 +394,31 @@ export default function App() {
                     <Tab eventKey="klubova" title="Klubová soutěž">
                         <div className="row">
                             <div className="col-xl-6 col-lg-8 col-md-10">
-                                <table className="table table-striped table-fixed">
-                                    <colgroup>
-                                        <col style={{ width: '6%' }} />{/* # */}
-                                        <col />{/* Jméno (flex) */}
-                                        <col style={{ width: '9%' }} />{/* Rok */}
-                                        <col style={{ width: '11%' }} />{/* Let 1 */}
-                                        <col style={{ width: '11%' }} />{/* Let 2 */}
-                                        <col style={{ width: '11%' }} />{/* Let 3 */}
-                                        <col style={{ width: '11%' }} />{/* Let 4 */}
-                                        <col style={{ width: '13%' }} />{/* Celkem */}
-                                    </colgroup>
-                                    <TableHead />
-                                    <tbody>
-                                    {pilots.map((pilot, idx) => (
-                                        <PilotRow key={pilot?.url ?? pilot?.name ?? idx} pilot={pilot} idx={idx} />
-                                    ))}
-                                    </tbody>
-                                </table>
+                                <div
+                                    className="table-responsive competition-table-scroll"
+                                    role="region"
+                                    aria-label="Výsledky klubové soutěže"
+                                    tabIndex={0}
+                                >
+                                    <table className="table table-striped table-fixed competition-table mb-0">
+                                        <colgroup>
+                                            <col style={{ width: '6%' }} />{/* # */}
+                                            <col />{/* Jméno (flex) */}
+                                            <col style={{ width: '9%' }} />{/* Rok */}
+                                            <col style={{ width: '11%' }} />{/* Let 1 */}
+                                            <col style={{ width: '11%' }} />{/* Let 2 */}
+                                            <col style={{ width: '11%' }} />{/* Let 3 */}
+                                            <col style={{ width: '11%' }} />{/* Let 4 */}
+                                            <col style={{ width: '13%' }} />{/* Celkem */}
+                                        </colgroup>
+                                        <TableHead />
+                                        <tbody>
+                                        {pilots.map((pilot, idx) => (
+                                            <PilotRow key={pilot?.url ?? pilot?.name ?? idx} pilot={pilot} idx={idx} />
+                                        ))}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </Tab>

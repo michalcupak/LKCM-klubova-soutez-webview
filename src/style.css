@@ -9,8 +9,16 @@
 
 /* pro no-scroll režim */
 body.no-scroll { overflow: hidden; }
-@media (max-width: 768px) {
-    /* v malých šířkách raději jen 1 sloupec (řeší autoCols výpočet) */
+
+.competition-table-scroll {
+    margin-bottom: 1rem;
+    -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 767.98px) {
+    .competition-table {
+        min-width: 680px;
+    }
 }
 
 .table-fixed { table-layout: fixed; width: 100%; }
